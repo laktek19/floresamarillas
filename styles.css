@@ -1,0 +1,479 @@
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Playfair+Display:wght@500;600;700&display=swap");
+
+#ramo{
+  z-index: 1000;
+  position: absolute;
+}
+
+:root {
+  --yellow: #f4c928;
+  --gold: #e6ae08;
+  --soft-yellow: #fff5bd;
+  --ink: #2d2a22;
+  --muted: #777263;
+  --paper: #fffdf8;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+}
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: "DM Sans", sans-serif;
+  overflow-x: hidden;
+}
+
+#scene {
+  position: relative;
+  min-height: 100vh;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+/* Entrada del punto desde arriba */
+.intro-line {
+  position: absolute;
+  left: 50%;
+  top: -15vh;
+  width: 2px;
+  height: 0;
+  background: linear-gradient(to bottom, transparent, var(--yellow));
+  transform: translateX(-50%);
+  opacity: 0;
+  z-index: 4;
+  animation: lineDrop 1.35s cubic-bezier(0.2, 0.8, 0.2, 1) 0.25s forwards;
+}
+
+.intro-line::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -7px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--yellow);
+  box-shadow: 0 0 24px rgba(244, 201, 40, 0.45);
+  transform: translateX(-50%);
+}
+
+.yellow-dot {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--yellow);
+  box-shadow:
+    0 0 0 0 rgba(244, 201, 40, 0.2),
+    0 5px 18px rgba(202, 160, 0, 0.16);
+  transform: translate(-50%, -50%) scale(0.3);
+  cursor: pointer;
+  z-index: 8;
+  opacity: 0;
+  animation: dotArrival 0.65s cubic-bezier(0.34, 1.56, 0.64, 1) 1.55s forwards;
+}
+
+.yellow-dot span {
+  position: absolute;
+  inset: -7px;
+  border: 1.5px solid rgba(230, 174, 8, 0.7);
+  border-radius: 50%;
+  animation: pulse 1.8s ease-in-out 2.2s infinite;
+}
+
+.heart-wrap {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 130px;
+  height: 130px;
+  transform: translate(-50%, -50%) rotate(-45deg) scale(0.2);
+  opacity: 0;
+  z-index: 7;
+  animation: heartReveal 0.9s cubic-bezier(0.2, 0.9, 0.2, 1) 2.05s forwards;
+  pointer-events: none;
+}
+
+.heart,
+.heart::before,
+.heart::after {
+  position: absolute;
+  width: 90px;
+  height: 90px;
+  border: 4px solid var(--yellow);
+  background: transparent;
+}
+
+.heart {
+  left: 20px;
+  top: 20px;
+  transform: rotate(45deg);
+  border-radius: 0 0 14px 0;
+  border-top-color: transparent;
+  border-left-color: transparent;
+}
+
+.heart::before,
+.heart::after {
+  content: "";
+  background: var(--paper);
+}
+
+.heart::before {
+  left: -47px;
+  top: 0;
+  border-radius: 50%;
+  border-right: 0;
+  transform: rotate(45deg);
+}
+
+.heart::after {
+  left: 0;
+  top: -47px;
+  border-radius: 50%;
+  border-bottom: 0;
+  transform: rotate(45deg);
+}
+
+/* Hint */
+.hint {
+  position: absolute;
+  left: 50%;
+  top: calc(50% + 82px);
+  transform: translateX(-50%);
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.83rem;
+  letter-spacing: 0.08em;
+  opacity: 0;
+  animation: fadeIn 1s ease 2.6s forwards;
+}
+
+/* Ramo */
+.bouquet {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: min(560px, 62vw);
+  height: min(590px, 76vh);
+  transform: translate(-50%, -46%) scale(0.7);
+  opacity: 0;
+  z-index: 3;
+  transition: transform 1.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+  pointer-events: none;
+}
+
+.bouquet.active {
+  opacity: 1;
+  transform: translate(-50%, -46%) scale(1);
+}
+
+.bouquet.shifted {
+  transform: translate(calc(-50% - min(27vw, 250px)), -46%) scale(0.9);
+}
+
+/* Estilo del Lazo */
+.bouquet-bow {
+  position: absolute;
+  bottom: 12%;
+  left: 50%;
+  width: 60px;
+  height: 30px;
+  transform: translateX(-50%) scale(0);
+  background: #c6920b;
+  border-radius: 15px;
+  z-index: 4;
+  opacity: 0;
+  animation: bowPop 0.6s cubic-bezier(0.2, 1.5, 0.4, 1) 1.5s forwards;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
+.bouquet-bow::before,
+.bouquet-bow::after {
+  content: "";
+  position: absolute;
+  bottom: -18px;
+  width: 16px;
+  height: 25px;
+  background: #a67705;
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+}
+.bouquet-bow::before { left: 8px; transform: rotate(15deg); }
+.bouquet-bow::after { right: 8px; transform: rotate(-15deg); }
+
+@keyframes bowPop {
+  from { transform: translateX(-50%) scale(0); opacity: 0; }
+  to { transform: translateX(-50%) scale(1); opacity: 1; }
+}
+
+.stem {
+  position: absolute;
+  width: 5px;
+  height: 0;
+  bottom: 15%; /* Todos convergen exactamente arriba del lazo */
+  left: 50%;
+  border-radius: 99px;
+  background: linear-gradient(90deg, #4d8d35, #76ad4d, #3f792e);
+  transform-origin: bottom center;
+  animation: stemGrow 0.9s ease forwards;
+  z-index: 1;
+}
+
+.leaf {
+  position: absolute;
+  width: 70px;
+  height: 24px;
+  border-radius: 100% 0 100% 0;
+  background: linear-gradient(135deg, #8fbe5e, #4d9137);
+  opacity: 0;
+  transform-origin: 0 50%;
+  animation: leafIn 0.55s ease forwards;
+  box-shadow: inset -7px -4px 8px rgba(39, 91, 29, 0.16);
+  z-index: 2;
+}
+
+.flower {
+  position: absolute;
+  width: 118px;
+  height: 118px;
+  transform: translate(-50%, -50%);
+  z-index: 3;
+}
+
+.petal {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 35px;
+  height: 62px;
+  border-radius: 58% 58% 48% 48%;
+  transform-origin: 50% 92%;
+  background: radial-gradient(
+    circle at 50% 86%,
+    #e4a800 0 7%,
+    #f5c928 28%,
+    #ffe979 100%
+  );
+  box-shadow:
+    inset 0 -5px 7px rgba(205, 147, 0, 0.18),
+    0 2px 5px rgba(197, 150, 0, 0.13);
+  opacity: 0;
+  animation: petalBloom 0.55s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+.flower .center {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 31px;
+  height: 31px;
+  transform: translate(-50%, -50%) scale(0);
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 38% 35%,
+    #6c4811 0 13%,
+    #3e2a0d 48%,
+    #211707 100%
+  );
+  box-shadow: 0 2px 7px rgba(76, 50, 0, 0.3);
+  animation: centerPop 0.5s cubic-bezier(0.2, 1.5, 0.4, 1) forwards;
+}
+
+.flower .center::after {
+  content: "";
+  position: absolute;
+  inset: 5px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #e8b624 0 1px, transparent 2px) 0 0/6px
+    6px;
+  opacity: 0.8;
+}
+
+/* Texto */
+.dedication {
+  position: absolute;
+  left: 57%;
+  top: 50%;
+  width: min(440px, 39vw);
+  transform: translateY(-50%) translateX(35px);
+  opacity: 0;
+  z-index: 5;
+  text-align: left;
+}
+
+.dedication.visible {
+  animation: textIn 1s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+.eyebrow {
+  margin: 0 0 10px;
+  color: #c49500;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+
+.dedication h1 {
+  margin: 0 0 22px;
+  font-family: "Playfair Display", serif;
+  font-size: clamp(2.15rem, 4vw, 4rem);
+  line-height: 1.03;
+  font-weight: 600;
+}
+
+.message {
+  margin: 0;
+  color: #6e6859;
+  font-size: clamp(0.95rem, 1.2vw, 1.08rem);
+  line-height: 1.7;
+}
+
+.message strong {
+  color: #403a2e;
+}
+
+.love-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 30px;
+  padding: 14px 22px;
+  border: 1px solid #dfb62b;
+  border-radius: 999px;
+  color: #4c411d;
+  background: #fffaf0;
+  text-decoration: none;
+  font-weight: 600;
+  box-shadow: 0 8px 24px rgba(188, 148, 0, 0.12);
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease,
+    background 0.25s ease;
+}
+
+.love-button:hover {
+  transform: translateY(-3px);
+  background: #fff4c9;
+  box-shadow: 0 12px 28px rgba(188, 148, 0, 0.2);
+}
+
+.love-button span {
+  color: #e8b617;
+}
+
+/* Keyframes */
+@keyframes lineDrop {
+  0% { height: 0; opacity: 0; top: -15vh; }
+  20% { opacity: 1; }
+  100% { height: 65vh; opacity: 1; top: 0; }
+}
+@keyframes dotArrival {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(0.2); }
+  70% { opacity: 1; transform: translate(-50%, -50%) scale(1.15); }
+  100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+@keyframes heartReveal {
+  0% { opacity: 0; transform: translate(-50%, -50%) rotate(-45deg) scale(0.2); }
+  70% { opacity: 1; transform: translate(-50%, -50%) rotate(-45deg) scale(1.12); }
+  100% { opacity: 1; transform: translate(-50%, -50%) rotate(-45deg) scale(1); }
+}
+@keyframes pulse {
+  0%, 100% { transform: scale(1); opacity: 0.5; }
+  50% { transform: scale(1.12); opacity: 1; }
+}
+@keyframes fadeIn {
+  to { opacity: 1; }
+}
+@keyframes stemGrow {
+  to {
+    height: var(--stem-height);
+    transform: rotate(var(--stem-rotate));
+  }
+}
+@keyframes leafIn {
+  from { opacity: 0; transform: scale(0) rotate(var(--leaf-rotate)); }
+  to { opacity: 1; transform: scale(1) rotate(var(--leaf-rotate)); }
+}
+@keyframes petalBloom {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) rotate(var(--angle)) scale(0.15);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) rotate(var(--angle)) translateY(-35px) scale(1);
+  }
+}
+@keyframes centerPop {
+  to { transform: translate(-50%, -50%) scale(1); }
+}
+@keyframes textIn {
+  from { opacity: 0; transform: translateY(-50%) translateX(35px); }
+  to { opacity: 1; transform: translateY(-50%) translateX(0); }
+}
+
+@media (max-width: 900px) {
+  .bouquet {
+    width: 470px;
+    height: 500px;
+  }
+  .bouquet.shifted {
+    transform: translate(-50%, -53%) scale(0.7);
+    opacity: 0.95;
+  }
+  .dedication {
+    left: 52%;
+    top: auto;
+    bottom: 5vh;
+    width: min(570px, 88vw);
+    text-align: center;
+    transform: translateX(-50%) translateY(25px);
+    background: rgba(255, 253, 248, 0.9);
+    padding: 20px 22px;
+    border-radius: 24px;
+    backdrop-filter: blur(8px);
+  }
+  .dedication.visible {
+    animation: textMobile 0.9s ease forwards;
+  }
+  .message {
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+  .dedication h1 {
+    font-size: 2rem;
+    margin-bottom: 12px;
+  }
+  .love-button {
+    margin-top: 18px;
+  }
+  .hint {
+    top: calc(50% + 78px);
+  }
+}
+
+@keyframes textMobile {
+  from { opacity: 0; transform: translateX(-50%) translateY(25px); }
+  to { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
